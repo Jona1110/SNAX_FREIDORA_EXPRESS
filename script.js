@@ -1,6 +1,6 @@
 // ============================================================================
 // S.N.A.X. ARCADE: FREIDORA EXPRESS (DESPACHO CONTRARRELOJ)
-// Alitas y Boneless van bañados en salsa; Papas son complemento directo sin salsa.
+// Alitas y Boneless llevan salsa; Papas y Papas Gajo salen directo sin salsa.
 // ============================================================================
 
 const DEFAULT_SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwi34XoQ39_oyZPUD8sdneu9l1So_w2P-31Wm1SgfQ-MszxYJTPOTL_YuusYQ0dZrgtRw/exec";
@@ -172,7 +172,8 @@ const PALETTE = {
     'E': '#15803d',
     'Y': '#facc15',
     'U': '#fef08a',
-    'S': '#cbd5e1'
+    'S': '#cbd5e1',
+    'Z': '#27272a'
 };
 
 const SPRITES = {
@@ -226,6 +227,24 @@ const SPRITES = {
         ".KRKKKKKKKKKKRK.",
         ".KRRRRRRRRRRRRK.",
         "..KRRRRRRRRRRK..",
+        "...KKKKKKKKKK...",
+        "................",
+        "................"
+    ],
+    wedges: [
+        "....KKK..KKK....",
+        "...KOOOKKOOOK...",
+        "..KOYOYKKOYOYK..",
+        ".KOYLYOYKOYLYOK.",
+        ".KOYLYOYKOYLYOK.",
+        "KOOYLYOOKOOYLYOK",
+        "KZZZZZZZZZZZZZZK",
+        "KZZSSSSSSSSSSZZK",
+        "KZZSOOOOOOOOSZZK",
+        ".KZSOOOOOOOOSZK.",
+        ".KZSSSSSSSSSSZK.",
+        ".KZZZZZZZZZZZZK.",
+        "..KZZZZZZZZZZK..",
         "...KKKKKKKKKK...",
         "................",
         "................"
@@ -338,11 +357,12 @@ function createSpriteCanvas(spriteKey, size = 32) {
 
 // --- Ingredientes del Menú S.N.A.X. ---
 // Alitas y Boneless requieren salsa (needsSauce: true).
-// Papas son complemento directo (needsSauce: false).
+// Papas y Papas Gajo son complementos directos (needsSauce: false).
 const PIECES = [
     { id: 'wing', name: 'ALITAS', key: '1', sprite: 'wing', needsSauce: true, border: 'border-amber-400', bg: 'bg-zinc-900 hover:bg-zinc-800' },
     { id: 'boneless', name: 'BONELESS', key: '2', sprite: 'boneless', needsSauce: true, border: 'border-orange-400', bg: 'bg-zinc-900 hover:bg-zinc-800' },
-    { id: 'fries', name: 'PAPAS', key: '3', sprite: 'fries', needsSauce: false, border: 'border-emerald-400', bg: 'bg-zinc-900 hover:bg-zinc-800' }
+    { id: 'fries', name: 'PAPAS', key: '3', sprite: 'fries', needsSauce: false, border: 'border-emerald-400', bg: 'bg-zinc-900 hover:bg-zinc-800' },
+    { id: 'wedges', name: 'PAPAS GAJO', key: '4', sprite: 'wedges', needsSauce: false, border: 'border-teal-400', bg: 'bg-zinc-900 hover:bg-zinc-800' }
 ];
 
 const SAUCES = [
@@ -352,11 +372,11 @@ const SAUCES = [
     { id: 'limon', name: 'PIM. LIMÓN', key: 'R', sprite: 'sauce_limon', badgeBg: 'bg-emerald-500 text-black', border: 'border-emerald-300' }
 ];
 
-// --- Catálogo Oficial de Premios S.N.A.X. ---
+// --- Catálogo Oficial de Premios S.N.A.X. (Umbrales Exigentes) ---
 const REWARD_TIERS = [
     {
         id: 'disc10',
-        points: 1500,
+        points: 3000,
         title: '10% DE DESCUENTO',
         shortLabel: '10% OFF',
         code: 'SNAX10',
@@ -364,15 +384,15 @@ const REWARD_TIERS = [
     },
     {
         id: 'freefries',
-        points: 2800,
-        title: 'PAPAS FRANCESAS GRATIS',
+        points: 6000,
+        title: 'PAPAS FRANCESAS O GAJO GRATIS',
         shortLabel: 'PAPAS GRATIS',
         code: 'PAPAS8BIT',
-        desc: 'Orden de papas doradas gratis al comprar tu combo'
+        desc: 'Orden de papas francesas o gajo gratis en tu combo'
     },
     {
         id: 'extrapcs',
-        points: 4200,
+        points: 9500,
         title: '+3 PIEZAS EXTRA GRATIS',
         shortLabel: '+3 PIEZAS',
         code: '3EXTRAS',
@@ -380,7 +400,7 @@ const REWARD_TIERS = [
     },
     {
         id: 'grandwings',
-        points: 15000,
+        points: 22000,
         title: '🔥 ORDEN DE ALITAS GRANDES GRATIS',
         shortLabel: 'ALITAS GRANDES',
         code: 'ALITASGRATIS',
@@ -602,9 +622,9 @@ function buildRecipeGuide() {
 
     const steps = [
         { title: '1. ALITAS [1] Y BONELESS [2]', desc: 'Selecciónalos primero en la freidora y luego elige su salsa [Q, W, E o R] para despachar.' },
-        { title: '2. PAPAS [3] (COMPLEMENTO)', desc: 'Las papas NO llevan salsa. Al presionar Papas [3] se despachan al instante.' },
-        { title: '3. DESPACHO CALIENTE (+50)', desc: 'Si entregas antes de que baje la mitad del tiempo, ganas bono extra.' },
-        { title: '4. RACHA x2', desc: 'Encadena 4 órdenes seguidas sin fallar para duplicar tus puntos.' }
+        { title: '2. PAPAS [3] Y PAPAS GAJO [4]', desc: 'Son complementos directos SIN salsa. Al presionar su botón se despachan al instante.' },
+        { title: '3. DESPACHO CALIENTE (+30)', desc: 'Si entregas antes de que baje la mitad del tiempo ganas 30 PTS (20 PTS si ya se enfrió un poco).' },
+        { title: '4. RACHA x2 (6 SEGUIDAS)', desc: 'Encadena 6 órdenes seguidas sin fallar ni dejar enfriar ninguna para duplicar puntos.' }
     ];
 
     steps.forEach(s => {
@@ -627,16 +647,16 @@ function buildStationControls() {
         btn.type = 'button';
         btn.dataset.pieceId = piece.id;
         btn.className = `station-btn ${piece.bg} border-2 ${piece.border} rounded-lg p-2 flex flex-col items-center justify-center gap-1 shadow-md`;
-        btn.appendChild(createSpriteCanvas(piece.sprite, 36));
+        btn.appendChild(createSpriteCanvas(piece.sprite, 34));
 
         const lbl = document.createElement('span');
-        lbl.className = 'pixel-font text-[8px] sm:text-[10px] text-white';
+        lbl.className = 'pixel-font text-[8px] sm:text-[9px] text-white leading-tight text-center';
         lbl.textContent = piece.name;
 
         const keyTag = document.createElement('span');
         keyTag.className = piece.needsSauce
-            ? 'text-[11px] text-amber-300 font-bold leading-none'
-            : 'text-[11px] text-emerald-400 font-bold leading-none';
+            ? 'text-[10px] text-amber-300 font-bold leading-none'
+            : 'text-[10px] text-emerald-400 font-bold leading-none';
         keyTag.textContent = piece.needsSauce ? `[${piece.key}] + SALSA` : `[${piece.key}] DIRECTO`;
 
         btn.appendChild(lbl);
@@ -666,33 +686,33 @@ function buildStationControls() {
 }
 buildStationControls();
 
-// --- Dificultad Progresiva (Con Muro Infierno S.N.A.X. a los 4,400 pts) ---
+// --- Dificultad Progresiva Exigente ---
 function updateDifficultyByScore() {
-    if (score >= 4400) {
-        speedMultiplier = 2.65 + Math.min(0.85, (score - 4400) / 1400);
+    if (score >= 9500) {
+        speedMultiplier = 2.85 + Math.min(0.95, (score - 9500) / 2500);
         currentPaceLabel = 'INFIERNO SNAX';
-    } else if (score >= 2800) {
-        speedMultiplier = 1.95 + ((score - 2800) / 1600) * 0.70;
+    } else if (score >= 6000) {
+        speedMultiplier = 2.15 + ((score - 6000) / 3500) * 0.70;
         currentPaceLabel = 'HORA PICO';
-    } else if (score >= 1500) {
-        speedMultiplier = 1.50 + ((score - 1500) / 1300) * 0.45;
+    } else if (score >= 3000) {
+        speedMultiplier = 1.65 + ((score - 3000) / 3000) * 0.50;
         currentPaceLabel = 'COCINA LLENA';
-    } else if (score >= 600) {
-        speedMultiplier = 1.20 + ((score - 600) / 900) * 0.30;
+    } else if (score >= 1000) {
+        speedMultiplier = 1.30 + ((score - 1000) / 2000) * 0.35;
         currentPaceLabel = 'CALENTANDO';
     } else {
-        speedMultiplier = 1.0 + (score / 600) * 0.20;
+        speedMultiplier = 1.12 + (score / 1000) * 0.18;
         currentPaceLabel = 'INICIAL';
     }
 
     paceBadgeEl.textContent = `TURNO: ${currentPaceLabel}`;
-    if (score >= 4400) {
+    if (score >= 9500) {
         paceBadgeEl.className = 'pixel-font text-[7px] sm:text-[8px] bg-fuchsia-800 text-yellow-300 px-1.5 py-0.5 rounded border border-yellow-300 animate-bounce shrink-0';
-    } else if (score >= 2800) {
+    } else if (score >= 6000) {
         paceBadgeEl.className = 'pixel-font text-[7px] sm:text-[8px] bg-purple-700 text-yellow-300 px-1.5 py-0.5 rounded border border-yellow-300 animate-pulse shrink-0';
-    } else if (score >= 1500) {
+    } else if (score >= 3000) {
         paceBadgeEl.className = 'pixel-font text-[7px] sm:text-[8px] bg-red-600 text-white px-1.5 py-0.5 rounded border border-yellow-300 shrink-0';
-    } else if (score >= 600) {
+    } else if (score >= 1000) {
         paceBadgeEl.className = 'pixel-font text-[7px] sm:text-[8px] bg-amber-500 text-black px-1.5 py-0.5 rounded border border-white shrink-0';
     } else {
         paceBadgeEl.className = 'pixel-font text-[7px] sm:text-[8px] bg-zinc-800 text-gray-200 px-1.5 py-0.5 rounded border border-zinc-600 shrink-0';
@@ -739,12 +759,13 @@ function updateHUD() {
 // --- Gestión de Comandas y Charola ---
 function createOrder() {
     const piece = PIECES[Math.floor(Math.random() * PIECES.length)];
-    // Solo Alitas y Boneless llevan salsa; Papas salen sin salsa (null)
+    // Solo Alitas y Boneless llevan salsa; Papas y Papas Gajo salen sin salsa (null)
     const sauce = piece.needsSauce
         ? SAUCES[Math.floor(Math.random() * SAUCES.length)]
         : null;
 
-    const baseDuration = Math.max(4.2, 11.5 / speedMultiplier);
+    // Tiempo de tolerancia exigente
+    const baseDuration = Math.max(3.6, 9.6 / speedMultiplier);
 
     activeOrders.push({
         id: nextOrderId++,
@@ -769,14 +790,14 @@ function renderOrdersRail() {
         }
 
         const pct = Math.max(0, Math.min(100, (order.timeLeft / order.maxTime) * 100));
-        const isUrgent = pct <= 32;
+        const isUrgent = pct <= 35;
         const barColor = pct > 50 ? 'bg-emerald-400' : (pct > 28 ? 'bg-amber-400' : 'bg-red-500');
 
         card.className = `order-card bg-zinc-900 border-2 ${isUrgent ? 'urgent' : 'border-amber-400/70'} rounded-lg p-2 flex flex-col items-center justify-between text-center shadow-lg`;
 
         const header = document.createElement('div');
         header.className = 'w-full flex items-center justify-between text-[10px] font-bold text-gray-400';
-        header.innerHTML = `<span class="pixel-font text-[7px] text-yellow-400">#${order.id}</span><span>${pct > 50 ? '🔥 +50' : '+35'}</span>`;
+        header.innerHTML = `<span class="pixel-font text-[7px] text-yellow-400">#${order.id}</span><span>${pct > 50 ? '🔥 +30' : '+20'}</span>`;
 
         const visuals = document.createElement('div');
         visuals.className = 'flex items-center justify-center gap-1.5 my-1';
@@ -833,7 +854,7 @@ function updatePrepStationUI() {
         prepPieceSlotEl.className = 'w-12 h-12 sm:w-14 sm:h-14 bg-zinc-900 border-2 border-dashed border-zinc-600 rounded flex items-center justify-center';
         prepPieceSlotEl.innerHTML = `<span class="pixel-font text-[8px] text-zinc-500">1.PIEZA</span>`;
         prepSauceSlotEl.innerHTML = `<span class="pixel-font text-[8px] text-zinc-500">2.SALSA</span>`;
-        prepStatusTextEl.textContent = 'Alitas/Boneless + Salsa • Papas salen directo';
+        prepStatusTextEl.textContent = 'Alitas/Boneless + Salsa • Papas y Gajo directo';
     }
 }
 
@@ -846,9 +867,10 @@ function completeOrderMatch(matchIndex, customLabel = null) {
     streak++;
     if (streak > maxStreak) maxStreak = streak;
 
+    // Puntajes ajustados para que los premios representen un reto real
     const isHot = (servedOrder.timeLeft / servedOrder.maxTime) > 0.5;
-    const basePts = isHot ? 50 : 35;
-    const multiplier = streak >= 4 ? 2 : 1;
+    const basePts = isHot ? 30 : 20;
+    const multiplier = streak >= 6 ? 2 : 1;
     const earned = basePts * multiplier;
 
     score += earned;
@@ -897,13 +919,14 @@ function handlePieceAction(pieceId) {
     const piece = PIECES.find(p => p.id === pieceId);
     if (!piece) return;
 
-    // Si es complemento directo sin salsa (Papas), despacha al instante
+    // Si es complemento directo sin salsa (Papas o Papas Gajo), despacha al instante
     if (!piece.needsSauce) {
         const matchIndex = activeOrders.findIndex(o => o.piece.id === pieceId && o.sauce === null);
         if (matchIndex !== -1) {
-            completeOrderMatch(matchIndex, '🍟 ¡PAPAS LISTAS!');
+            const label = piece.id === 'wedges' ? '🥔 ¡GAJO LISTAS!' : '🍟 ¡PAPAS LISTAS!';
+            completeOrderMatch(matchIndex, label);
         } else {
-            registerMistake('✖ ¡NADIE PIDIÓ PAPAS! -1 VIDA');
+            registerMistake(`✖ ¡NADIE PIDIÓ ${piece.name}! -1 VIDA`);
         }
         return;
     }
@@ -951,7 +974,7 @@ function gameTick() {
         spawnCooldown -= dtSec;
         if (spawnCooldown <= 0 || activeOrders.length === 0) {
             createOrder();
-            spawnCooldown = Math.max(0.85, 2.6 / speedMultiplier);
+            spawnCooldown = Math.max(0.65, 2.1 / speedMultiplier);
         }
     }
 
@@ -985,6 +1008,7 @@ window.addEventListener('keydown', (e) => {
     if (e.code === 'Digit1' || e.code === 'Numpad1') handlePieceAction('wing');
     else if (e.code === 'Digit2' || e.code === 'Numpad2') handlePieceAction('boneless');
     else if (e.code === 'Digit3' || e.code === 'Numpad3') handlePieceAction('fries');
+    else if (e.code === 'Digit4' || e.code === 'Numpad4') handlePieceAction('wedges');
     else if (e.code === 'KeyQ') serveWithSauce('atomic');
     else if (e.code === 'KeyW') serveWithSauce('mango');
     else if (e.code === 'KeyE') serveWithSauce('bbq');
@@ -1125,9 +1149,10 @@ function triggerGameOver() {
     const accuracyPct = totalAttempts > 0 ? Math.round((ordersServed / totalAttempts) * 100) : 0;
 
     let rankLabel = 'APRENDIZ';
-    if (score >= 4200) rankLabel = 'CHEF EJECUTIVO';
-    else if (score >= 2800) rankLabel = 'MAESTRO FREIDOR';
-    else if (score >= 1500) rankLabel = 'COCINERO PRO';
+    if (score >= 22000) rankLabel = 'LEYENDA SNAX';
+    else if (score >= 9500) rankLabel = 'CHEF EJECUTIVO';
+    else if (score >= 6000) rankLabel = 'MAESTRO FREIDOR';
+    else if (score >= 3000) rankLabel = 'COCINERO PRO';
 
     finalPlayerNameEl.textContent = currentPlayerName.toUpperCase();
     finalScoreEl.textContent = score;
