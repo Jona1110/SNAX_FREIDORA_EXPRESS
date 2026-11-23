@@ -1,0 +1,130 @@
+/* S.N.A.X. Arcade: Freidora Express - Retro 8-Bit Styles */
+
+body {
+    font-family: 'VT323', monospace;
+    background-color: #07090f;
+    color: #f3f4f6;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+}
+
+.pixel-font {
+    font-family: 'Press Start 2P', cursive;
+}
+
+.title-pixel-shadow {
+    text-shadow:
+        3px 3px 0px #991b1b,
+        5px 5px 0px rgba(0, 0, 0, 0.85);
+}
+
+@media (min-width: 640px) {
+    .title-pixel-shadow {
+        text-shadow:
+            4px 4px 0px #991b1b,
+            7px 7px 0px rgba(0, 0, 0, 0.85);
+    }
+}
+
+/* Efecto CRT */
+.crt::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+    z-index: 20;
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none;
+}
+
+.arcade-box {
+    box-shadow: 0 0 24px rgba(239, 68, 68, 0.45), inset 0 0 15px rgba(245, 158, 11, 0.2);
+    border: 3px solid #ef4444;
+}
+
+@media (min-width: 640px) {
+    .arcade-box {
+        border-width: 4px;
+    }
+}
+
+/* Botones Arcade 3D */
+.btn-arcade {
+    font-family: 'Press Start 2P', cursive;
+    transition: transform 0.1s ease, background-color 0.1s ease;
+    box-shadow: 0 4px 0 #991b1b;
+}
+
+.btn-arcade:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #991b1b;
+}
+
+.btn-arcade-blue {
+    box-shadow: 0 4px 0 #1e3a8a;
+}
+
+.btn-arcade-blue:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #1e3a8a;
+}
+
+.btn-arcade-green {
+    box-shadow: 0 4px 0 #065f46;
+}
+
+.btn-arcade-green:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #065f46;
+}
+
+.btn-arcade-amber {
+    box-shadow: 0 4px 0 #92400e;
+}
+
+.btn-arcade-amber:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #92400e;
+}
+
+/* Tarjetas de comanda en barra */
+.order-card {
+    transition: transform 0.12s ease, border-color 0.15s ease;
+}
+
+.order-card.urgent {
+    animation: urgentPulse 0.45s infinite alternate;
+}
+
+@keyframes urgentPulse {
+    from {
+        border-color: #ef4444;
+        box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    }
+    to {
+        border-color: #facc15;
+        box-shadow: 0 0 16px rgba(239, 68, 68, 0.85);
+    }
+}
+
+/* Botones de Estación de Cocina */
+.station-btn {
+    transition: transform 0.06s ease, filter 0.06s ease;
+    touch-action: manipulation;
+}
+
+.station-btn:active,
+.station-btn.is-active {
+    transform: translateY(3px);
+}
+
+canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}

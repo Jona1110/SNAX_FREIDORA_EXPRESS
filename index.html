@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>S.N.A.X. Arcade: Freidora Express</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Retro Pixel -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <!-- Estilos Arcade Personalizados -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="min-h-[100dvh] flex flex-col items-center justify-center p-1.5 sm:p-4 select-none">
+
+    <!-- Contenedor Principal Arcade -->
+    <div id="game-container" class="relative w-full max-w-2xl bg-[#0b0d14] arcade-box rounded-lg overflow-hidden flex flex-col crt shadow-2xl">
+        
+        <!-- HUD Superior (Oculto en pantalla de inicio) -->
+        <header id="game-hud" class="hidden bg-black/95 border-b-2 border-red-600 px-2 sm:px-4 py-2 flex flex-wrap justify-between items-center gap-1.5 z-30 shrink-0">
+            <div class="flex items-center gap-1.5 min-w-0 shrink">
+                <span class="pixel-font text-[10px] sm:text-sm text-yellow-400 shrink-0">S.N.A.X.</span>
+                <span id="hud-player-tag" class="hidden md:inline-block pixel-font text-[9px] bg-zinc-800 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded truncate max-w-[100px]">CHEF</span>
+                <span id="combo-badge" class="hidden pixel-font text-[8px] sm:text-[10px] bg-amber-500 text-black px-1.5 py-0.5 rounded animate-bounce shrink-0">RACHA x2</span>
+                <span id="pace-badge" class="pixel-font text-[7px] sm:text-[8px] bg-zinc-800 text-gray-200 px-1.5 py-0.5 rounded border border-zinc-600 shrink-0">TURNO: INICIAL</span>
+            </div>
+            
+            <div class="flex items-center gap-2 sm:gap-4 pixel-font shrink-0 ml-auto">
+                <div class="text-right sm:text-left">
+                    <span class="text-[7px] sm:text-[10px] text-red-500 block leading-none mb-0.5">SCORE</span>
+                    <span id="score-val" class="text-[10px] sm:text-base text-yellow-400 block leading-none">000000</span>
+                </div>
+                <div class="text-center">
+                    <span class="text-[7px] sm:text-[10px] text-red-500 block leading-none mb-0.5">RACHA</span>
+                    <span id="streak-val" class="text-[10px] sm:text-base text-emerald-400 block leading-none">0</span>
+                </div>
+                <div class="shrink-0">
+                    <span class="text-[7px] sm:text-[10px] text-red-500 block leading-none mb-0.5">LIVES</span>
+                    <div id="lives-container" class="flex items-center gap-1 min-w-[54px] sm:min-w-[68px] h-4"></div>
+                </div>
+                <button id="pause-btn" title="Pausar (P / ESC)" class="hidden bg-zinc-800 hover:bg-zinc-700 border-2 border-yellow-400 text-yellow-400 px-2 py-1 rounded text-[10px] sm:text-xs active:translate-y-0.5 transition shrink-0">
+                    II
+                </button>
+            </div>
+        </header>
+
+        <!-- Pantalla de Inicio / Login -->
+        <section id="start-screen" class="w-full min-h-[480px] sm:min-h-[540px] bg-[#0b0e17] flex flex-col items-center justify-center px-4 py-6 sm:p-8 z-30 text-center">
+            
+            <div class="mb-3 sm:mb-4 text-[#facc15] pixel-font text-[9px] sm:text-xs tracking-[0.18em] flex items-center justify-center gap-2 drop-shadow-[0_0_8px_rgba(250,204,21,0.45)]">
+                <span class="text-orange-500">♦</span>
+                <span>S.N.A.X. PRESENTA</span>
+                <span class="text-orange-500">♦</span>
+            </div>
+
+            <h1 class="pixel-font uppercase leading-[1.22] mb-3 sm:mb-4 select-none">
+                <span class="block text-2xl sm:text-4xl md:text-[42px] text-white title-pixel-shadow tracking-wider">
+                    FREIDORA <span class="text-[#facc15]">EXPRESS</span>
+                </span>
+                <span class="block text-sm sm:text-xl md:text-2xl text-red-500 title-pixel-shadow tracking-widest mt-1.5">
+                    DESPACHO CONTRARRELOJ
+                </span>
+            </h1>
+
+            <p class="pixel-font text-[9px] sm:text-xs text-[#fb923c] tracking-[0.12em] uppercase mb-4 sm:mb-5">
+                BAÑA ALITAS Y BONELESS. DESPACHA PAPAS AL INSTANTE.
+            </p>
+            
+            <!-- High Score & Estado Google Sheets -->
+            <div class="inline-flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 bg-[#111522] border border-slate-800/90 rounded-lg px-3.5 sm:px-4 py-2 mb-4 shadow-inner">
+                <span class="pixel-font text-[10px] sm:text-xs text-[#4ade80] tracking-wider">
+                    HIGH SCORE: <span id="start-highscore" class="text-[#facc15]">0</span>
+                </span>
+                <span id="sheets-status-pill" class="pixel-font px-2.5 py-1 rounded bg-[#07261d] border border-[#10b981] text-[#34d399] text-[8px] sm:text-[9px] tracking-wider">
+                    CONECTADO
+                </span>
+            </div>
+
+            <p class="text-slate-300 text-base sm:text-xl max-w-md leading-snug mb-4 sm:mb-5 px-2">
+                Las alitas y boneless van bañados en su salsa; las papas salen directo sin salsa. ¡No dejes que se enfríen las órdenes!
+            </p>
+
+            <!-- Caja de Registro de Jugador -->
+            <div id="login-box" class="bg-[#111522] border border-slate-700/80 p-3 rounded-lg mb-4 w-full max-w-md text-left shadow-lg">
+                <label for="player-name-input" class="block pixel-font text-[8px] sm:text-[10px] text-[#facc15] mb-2">
+                    👤 TU NOMBRE O APODO PARA JUGAR:
+                </label>
+                <input
+                    type="text"
+                    id="player-name-input"
+                    maxlength="24"
+                    placeholder="Ej. Jony / Tu Apodo..."
+                    class="w-full bg-[#080a10] border-2 border-slate-700 focus:border-[#facc15] rounded px-3 py-2 text-white text-base sm:text-lg outline-none transition"
+                />
+                <p id="login-error-msg" class="hidden text-red-400 text-sm mt-1.5 font-bold">⚠ Escribe tu nombre o apodo para iniciar y registrar tu partida.</p>
+            </div>
+
+            <!-- Badge de Jugador Guardado -->
+            <div id="locked-player-banner" class="hidden bg-[#111522] border border-amber-500/50 px-3.5 py-2.5 rounded-lg mb-4 w-full max-w-md flex items-center justify-between">
+                <span class="pixel-font text-[8px] sm:text-[10px] text-slate-400">🔒 CHEF EN TURNO:</span>
+                <span id="locked-player-display" class="pixel-font text-[9px] sm:text-xs text-[#facc15] truncate max-w-[200px]">CHEF</span>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex flex-wrap items-center justify-center gap-3 w-full max-w-md">
+                <button id="start-btn" class="flex-1 sm:flex-initial btn-arcade bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded text-[11px] sm:text-sm uppercase tracking-widest border-2 border-yellow-400">
+                    ▶ COCINAR
+                </button>
+                <button id="open-guide-btn" class="btn-arcade btn-arcade-blue bg-slate-800 hover:bg-slate-700 text-sky-300 px-3.5 py-3 rounded text-[10px] sm:text-xs uppercase tracking-wider border-2 border-sky-400/70">
+                    📖 RECETAS
+                </button>
+                <button id="open-rewards-btn" class="btn-arcade btn-arcade-amber bg-amber-500 hover:bg-amber-400 text-black px-4 py-3 rounded text-[10px] sm:text-xs uppercase tracking-wider border-2 border-white">
+                    🎁 PREMIOS
+                </button>
+            </div>
+        </section>
+
+        <!-- Zona Activa de Cocina -->
+        <div id="game-play-zone" class="hidden relative w-full bg-gradient-to-b from-[#0e121d] via-[#121624] to-[#0b0e17] p-2.5 sm:p-4 flex flex-col gap-2.5 sm:gap-3.5 overflow-hidden">
+            
+            <!-- Popups Flotantes -->
+            <div id="popup-container" class="absolute inset-0 pointer-events-none z-30 overflow-hidden"></div>
+
+            <!-- Toast de Premio Desbloqueado -->
+            <div id="reward-toast" class="hidden absolute top-2 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-sm bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black border-2 border-white rounded-lg px-2.5 py-1.5 shadow-[0_0_20px_rgba(250,204,21,0.9)] pointer-events-none transition-all duration-300">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="text-left min-w-0">
+                        <div class="pixel-font text-[7px] sm:text-[9px] text-red-700 font-bold">★ ¡PREMIO DESBLOQUEADO! ★</div>
+                        <div id="reward-toast-title" class="pixel-font text-[9px] sm:text-xs font-extrabold text-black mt-0.5 truncate">10% DE DESCUENTO</div>
+                    </div>
+                    <span id="reward-toast-code" class="pixel-font text-[8px] sm:text-[9px] bg-black text-yellow-400 px-2 py-1 rounded shrink-0">SNAX10</span>
+                </div>
+            </div>
+
+            <!-- Riel de Comandas Activas -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5 px-0.5">
+                    <span class="pixel-font text-[8px] sm:text-[10px] text-amber-400">📋 COMANDAS EN BARRA</span>
+                    <span class="text-xs sm:text-sm text-slate-400">Despacha la orden con mayor urgencia</span>
+                </div>
+                <div id="orders-rail" class="grid grid-cols-3 gap-2 sm:gap-3 min-h-[124px] sm:min-h-[144px]"></div>
+            </div>
+
+            <!-- Estación de Armado (Charola en Preparación) -->
+            <div id="prep-station" class="bg-black/80 border-2 border-zinc-700 rounded-lg p-2.5 sm:p-3 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                    <div id="prep-piece-slot" class="w-12 h-12 sm:w-14 sm:h-14 bg-zinc-900 border-2 border-dashed border-zinc-600 rounded flex items-center justify-center">
+                        <span class="pixel-font text-[8px] text-zinc-500">1.PIEZA</span>
+                    </div>
+                    <span class="pixel-font text-xs text-yellow-400">+</span>
+                    <div id="prep-sauce-slot" class="w-12 h-12 sm:w-14 sm:h-14 bg-zinc-900 border-2 border-dashed border-zinc-600 rounded flex items-center justify-center">
+                        <span class="pixel-font text-[8px] text-zinc-500">2.SALSA</span>
+                    </div>
+                    <div class="text-left ml-1">
+                        <div class="pixel-font text-[8px] sm:text-[10px] text-yellow-400">TU CHAROLA</div>
+                        <div id="prep-status-text" class="text-sm sm:text-base text-slate-300 leading-tight">Alitas/Boneless + Salsa • Papas salen directo</div>
+                    </div>
+                </div>
+                <button id="clear-tray-btn" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-gray-300 pixel-font text-[8px] px-2.5 py-1.5 rounded shrink-0">
+                    ✖ LIMPIAR [ESC]
+                </button>
+            </div>
+
+            <!-- Paso 1: Botones de Productos (Freidora) -->
+            <div>
+                <div class="pixel-font text-[8px] sm:text-[10px] text-sky-400 mb-1.5 px-0.5">PASO 1 • FREIDORA (PAPAS SALEN DIRECTO SIN SALSA):</div>
+                <div id="pieces-pad" class="grid grid-cols-3 gap-2"></div>
+            </div>
+
+            <!-- Paso 2: Botones de Salsas (Solo para Alitas y Boneless) -->
+            <div>
+                <div class="pixel-font text-[8px] sm:text-[10px] text-orange-400 mb-1.5 px-0.5">PASO 2 • BAÑA ALITAS O BONELESS EN SALSA:</div>
+                <div id="sauces-pad" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+            </div>
+
+            <!-- Menú de Pausa -->
+            <div id="pause-screen" class="absolute inset-0 bg-black/90 hidden flex-col items-center justify-center p-4 sm:p-6 z-40 text-center backdrop-blur-[2px]">
+                <div class="bg-gray-950 border-4 border-yellow-400 p-4 sm:p-6 rounded-lg w-full max-w-xs sm:max-w-sm shadow-[0_0_25px_rgba(250,204,21,0.4)] space-y-3">
+                    <h2 class="pixel-font text-lg sm:text-2xl text-yellow-400 tracking-widest mb-1">PAUSA</h2>
+                    <p id="pause-pace-summary" class="text-amber-300 text-xs sm:text-sm mb-2">Turno: Inicial</p>
+                    
+                    <button id="resume-btn" class="w-full btn-arcade btn-arcade-green bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded text-[11px] sm:text-sm border-2 border-emerald-300">
+                        ▶ CONTINUAR
+                    </button>
+                    <button id="pause-restart-btn" class="w-full btn-arcade btn-arcade-blue bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded text-[11px] sm:text-sm border-2 border-blue-300">
+                        ↻ REINICIAR
+                    </button>
+                    <button id="pause-sound-btn" class="w-full btn-arcade bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded text-[11px] sm:text-sm border-2 border-amber-300">
+                        🔊 SONIDO: ON
+                    </button>
+                    <button id="exit-menu-btn" class="w-full btn-arcade bg-red-700 hover:bg-red-600 text-white py-2.5 rounded text-[11px] sm:text-sm border-2 border-red-400">
+                        ✖ SALIR AL MENÚ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pantalla de Game Over -->
+            <div id="gameover-screen" class="absolute inset-0 bg-black/95 hidden flex-col items-center justify-center p-3 sm:p-5 z-40 text-center overflow-y-auto">
+                <div class="text-lg sm:text-3xl pixel-font text-red-600 mb-1 animate-pulse">GAME OVER</div>
+                <p id="final-comment" class="text-amber-400 text-sm sm:text-xl mb-2">¡Se saturó la cocina!</p>
+                
+                <div class="bg-gray-900 border-2 border-red-500 p-2.5 sm:p-3 rounded-lg mb-2 w-full max-w-sm space-y-1">
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
+                        <span class="text-gray-400">CHEF:</span>
+                        <span id="final-player-name" class="text-amber-300 pixel-font text-[9px] sm:text-xs truncate max-w-[150px]">INVITADO</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
+                        <span class="text-gray-400">PUNTUACIÓN:</span>
+                        <span id="final-score" class="text-yellow-400 pixel-font text-[10px] sm:text-sm">0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
+                        <span class="text-gray-400">RÉCORD:</span>
+                        <span id="highscore-val" class="text-green-400 pixel-font text-[10px] sm:text-sm">0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
+                        <span class="text-gray-400">RANGO COCINA:</span>
+                        <span id="final-rank-profile" class="text-sky-400 pixel-font text-[9px] sm:text-[10px]">APRENDIZ (0%)</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Cupón Desbloqueado -->
+                <div id="unlocked-coupon-box" class="hidden w-full max-w-sm mb-2 bg-gradient-to-b from-amber-950/90 to-gray-900 border-2 border-dashed border-yellow-400 rounded-lg p-2 sm:p-2.5 text-center shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+                    <div class="pixel-font text-[8px] sm:text-[10px] text-yellow-400 mb-1">★ CUPÓN DESBLOQUEADO ★</div>
+                    <div id="coupon-title" class="pixel-font text-[10px] sm:text-sm text-white mb-1">10% DE DESCUENTO</div>
+                    <p id="coupon-desc" class="text-xs text-amber-200 mb-1.5">En tu próximo pedido de alitas o boneless</p>
+                    
+                    <div class="flex items-center justify-center gap-2 bg-black/80 border border-yellow-500/60 rounded px-2.5 py-1 mb-1.5">
+                        <span id="coupon-code-text" class="pixel-font text-[10px] sm:text-sm text-green-400 tracking-wider">SNAX10</span>
+                        <button id="copy-coupon-btn" class="bg-yellow-400 hover:bg-yellow-300 text-black pixel-font text-[8px] sm:text-[9px] px-2 py-1 rounded active:scale-95 transition">
+                            COPIAR
+                        </button>
+                    </div>
+                    <div id="all-unlocked-badges" class="flex flex-wrap justify-center gap-1 mb-1"></div>
+                    <p class="text-[11px] text-gray-300">📸 Toma captura y muéstrala al pedir en S.N.A.X.</p>
+                </div>
+
+                <!-- Aviso si aún no llega al primer cupón -->
+                <div id="no-coupon-hint" class="hidden w-full max-w-sm mb-2 bg-gray-900/90 border border-gray-700 rounded-lg p-2 text-xs text-gray-300">
+                    🎯 ¡Llega a <span class="text-yellow-400 font-bold">1,500 PTS</span> para desbloquear tu primer cupón de descuento!
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-2 w-full max-w-sm justify-center">
+                    <button id="restart-btn" class="flex-1 btn-arcade btn-arcade-green bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded text-[10px] sm:text-xs uppercase tracking-wider border-2 border-yellow-400">
+                        VOLVER A JUGAR
+                    </button>
+                    <button id="gameover-menu-btn" class="flex-1 btn-arcade bg-zinc-700 hover:bg-zinc-600 text-white px-4 py-2 rounded text-[10px] sm:text-xs uppercase tracking-wider border-2 border-gray-400">
+                        MENÚ PRINCIPAL
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Guía de Recetas -->
+        <div id="guide-modal" class="absolute inset-0 bg-black/95 hidden flex-col items-center justify-center p-4 sm:p-6 z-50 text-center overflow-y-auto">
+            <div class="bg-[#0f1320] border-4 border-sky-400 p-4 sm:p-5 rounded-lg w-full max-w-md shadow-[0_0_25px_rgba(56,189,248,0.35)]">
+                <h2 class="pixel-font text-xs sm:text-base text-sky-400 mb-1">📖 RECETARIO S.N.A.X.</h2>
+                <p class="text-gray-300 text-xs sm:text-sm mb-3">Despacha cada orden correctamente antes de que se enfríe:</p>
+                <div id="recipe-guide-grid" class="space-y-2 text-left mb-4"></div>
+                <button id="close-guide-btn" class="w-full btn-arcade bg-red-600 hover:bg-red-500 text-white py-2.5 rounded text-xs sm:text-sm border-2 border-yellow-400">
+                    ENTENDIDO
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Catálogo de Premios -->
+        <div id="rewards-modal" class="absolute inset-0 bg-black/95 hidden flex-col items-center justify-center p-4 sm:p-6 z-50 text-center overflow-y-auto">
+            <div class="bg-[#0f1320] border-4 border-yellow-400 p-4 sm:p-5 rounded-lg w-full max-w-md shadow-[0_0_25px_rgba(250,204,21,0.4)]">
+                <h2 class="pixel-font text-sm sm:text-lg text-yellow-400 mb-1">🎁 PREMIOS S.N.A.X.</h2>
+                <p class="text-gray-300 text-xs sm:text-sm mb-3">Supera estas puntuaciones en una partida y desbloquea tu cupón:</p>
+                <div id="rewards-catalog-list" class="space-y-2 text-left mb-4"></div>
+                <button id="close-rewards-btn" class="w-full btn-arcade bg-red-600 hover:bg-red-500 text-white py-2.5 rounded text-xs sm:text-sm border-2 border-yellow-400">
+                    VOLVER
+                </button>
+            </div>
+        </div>
+
+        <footer class="bg-black/95 border-t border-gray-800 py-1.5 sm:py-2 px-3 sm:px-4 text-center text-xs text-gray-400 flex justify-between items-center shrink-0">
+            <span>© 2026 S.N.A.X. ARCADE</span>
+            <span class="hidden sm:inline">[1-2] + [Q-W-E-R] SALSA • [3] PAPAS DIRECTO</span>
+            <button id="sound-toggle" class="text-yellow-400 hover:text-white transition">🔊 AUDIO: ON</button>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
